@@ -195,15 +195,12 @@ var App = React.createClass({
 
 	if(Session.get("filter")!==undefined){		
 		if(Session.get("forvard")){
-			//otherDirMessages= Messages.findOne({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$lt: Session.get("filter")} }]});
-			otherDirMessages=Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$gt: Session.get("filter")} }]},{sort:{createdAt:1}, skip: 0, limit: messagesOnPage});
+			otherDirMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$lt: Session.get("filter")} }]});
 		}else{
 			otherDirMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$lt: Session.get("filter")} }]});				
-			//otherDirMessages= Messages.find ({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$lt: Session.get("filter")} }]},{sort:{createdAt:-1}, skip: 0, limit: messagesOnPage});
 		}
 	}else{
-		//otherDirMessages= Messages.findOne({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$gt: new Date()} }]});	
-		otherDirMessages=Messages.find({$or: [{location: locSelector},{owner: userSelector}]},{sort:{createdAt:-1}, skip: 0, limit: messagesOnPage});
+		otherDirMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$gt: new Date()} }]});	
 	}	
 
 	return{
