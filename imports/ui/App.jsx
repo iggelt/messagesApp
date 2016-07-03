@@ -159,18 +159,17 @@ var App = React.createClass({
   };
   
   export default createContainer(()=>{
-  	if (Meteor.isClient) {
+  	
+	if (Meteor.isClient) {
 		if(Session.get("filter")==undefined){
 			Session.set("filter", new Date());
 			Session.set("forvard",false);
 		}		
 	}
   
-  
 
    Meteor.subscribe('messages',Session.get("filter"),Session.get("forvard"),(Meteor.user()!==null&&Meteor.user()!==undefined)? Meteor.user().location:"");
-   //Meteor.subscribe('nextMessages',Session.get("filter"),Session.get("forvard"),(Meteor.user()!==null&&Meteor.user()!==undefined)? Meteor.user().location:"");
-   //Meteor.subscribe('prevMessages',Session.get("filter"),Session.get("forvard"),(Meteor.user()!==null&&Meteor.user()!==undefined)? Meteor.user().location:"");
+   Meteor.subscribe('otherDirectionMessages',Session.get("filter"),Session.get("forvard"),(Meteor.user()!==null&&Meteor.user()!==undefined)? Meteor.user().location:"");
    
    Meteor.subscribe('locations');
    Meteor.subscribe('users');
@@ -180,32 +179,32 @@ var App = React.createClass({
 	var currentDate=(this.state)?this.state.lastMessageDate:new Date();
 	
 	var publishingMessages=[];
-	var prevMessages=[];
-	var nextMessages=[];
+	var otherDirMessages=[];
+	
 	
 	if(Session.get("filter")!==undefined){
 			
-			if(Session.get("forvard")){
-				publishingMessages: Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$gt: filter} }]},{sort:{createdAt:1}, skip: 0, limit: messagesOnPage}).fetch();
-				prevMessages: Messages.findOne({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$lt: filter} }]}).fetch();
-				if(publishingMessages.fetch().length()>0){
-					nextMessages: Messages.findOne({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$gt: publishingMessages[0]['createdAt']} }]}).fetch(); 
-				}
-			}else{
-				publishingMessages: Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$lt: filter} }]},{sort:{createdAt:-1}, skip: 0, limit: messagesOnPage}).fetch();
-				prevMessages: Messages.findOne({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$gt: filter} }]}).fetch();
-				if(publishingMessages.length()>0){
-					nextMessages= Messages.findOne({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$gt: publishingMessages[publishingMessages.length-1]['createdAt']} }]}).fetch() 
-				}						
-			}
+		if(Session.get("forvard")){
+			publishingMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$gt: Session.get("filter")} }]},{sort:{createdAt:1}, skip: 0, limit: messagesOnPage});
 		}else{
-			publishingMessages: Messages.find({$or: [{location: locSelector},{owner: userSelector}]},{sort:{createdAt:-1}, skip: 0, limit: messagesOnPage}).fetch();
-			if(publishingMessages.length()>0){
-				nextMessages: Messages.findOne({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$lt: publishingMessages[0]['createdAt']} }]}).fetch();
-			}
+			publishingMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$lt: Session.get("filter")} }]},{sort:{createdAt:-1}, skip: 0, limit: messagesOnPage});						
 		}
-	
-	
+	}else{
+		publishingMessages= Messages.find({$or: [{location: locSelector},{owner: userSelector}]},{sort:{createdAt:-1}, skip: 0, limit: messagesOnPage});
+	}
+
+	if(Session.get("filter")!==undefined){		
+		if(Session.get("forvard")){
+			//otherDirMessages= Messages.findOne({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$lt: Session.get("filter")} }]});
+			otherDirMessages=Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$gt: Session.get("filter")} }]},{sort:{createdAt:1}, skip: 0, limit: messagesOnPage});
+		}else{
+			otherDirMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$lt: Session.get("filter")} }]});				
+			//otherDirMessages= Messages.find ({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$lt: Session.get("filter")} }]},{sort:{createdAt:-1}, skip: 0, limit: messagesOnPage});
+		}
+	}else{
+		//otherDirMessages= Messages.findOne({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$gt: new Date()} }]});	
+		otherDirMessages=Messages.find({$or: [{location: locSelector},{owner: userSelector}]},{sort:{createdAt:-1}, skip: 0, limit: messagesOnPage});
+	}	
 
 	return{
 		//messages: Messages.find({location: locSelector},{sort:{createdAt:-1}, skip: 0, limit: 2}).fetch(), 
@@ -215,8 +214,7 @@ var App = React.createClass({
 		
 		
 		messages: publishingMessages.fetch(),
-		//prevMessages: prevMessages.fetch(),
-		//nextMessages: nextMessages.fetch(),
+		otherDirectionMessages: otherDirMessages.fetch(),
 					
 		users: Meteor.users.find().fetch(),
 		locations: Locations.find({}).fetch()

@@ -13,31 +13,11 @@ if(Meteor.isServer){
 		
 	var additional=[];
 	var publishingMessages=[];
-	var prevMessages=[];
-	var nextMessages=[];
+	var otherDirMessages=[];
 	var self = this;
-		
-	if(filter!==undefined){
-		
-		if(forvard){
-			publishingMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$gt: filter} }]},{sort:{createdAt:1}, skip: 0, limit: messagesOnPage});
-			prevMessages= Messages.findOne({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$lt: filter} }]});
-			if(publishingMessages.fetch().length()>0){
-				nextMessages= Messages.findOne({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$gt: publishingMessages[0]['createdAt']} }]}); 
-			}
-		}else{
-			publishingMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$lt: filter} }]},{sort:{createdAt:-1}, skip: 0, limit: messagesOnPage});
-			prevMessages= Messages.findOne({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$gt: filter} }]});
-			if(publishingMessages.fetch().length()>0){
-				nextMessages= Messages.findOne({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$gt: publishingMessages[publishingMessages.length-1]['createdAt']} }]}); 
-			}						
-		}
-	}else{
-		publishingMessages= Messages.find({$or: [{location: locSelector},{owner: userSelector}]},{sort:{createdAt:-1}, skip: 0, limit: messagesOnPage});
-		if(publishingMessages.fetch().length()>0){
-			nextMessages= Messages.findOne({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$lt: publishingMessages[0]['createdAt']} }]});
-		}
-	}
+	
+	messagesOnPage++;
+	
 	
 	Meteor.publish('messages',function messagesPublication(filter,forvard,locSelector){
 		if(filter!==undefined){
@@ -53,25 +33,19 @@ if(Meteor.isServer){
 		return publishingMessages;
 	});
 
-	Meteor.publish('nextMessages',function messagesPublication(filter,forvard,locSelector){
+	Meteor.publish('otherDirectionMessages',function messagesPublication(filter,forvard,locSelector){
 	if(filter!==undefined){		
 		if(forvard){
-			prevMessages= Messages.findOne({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$lt: filter} }]});
+			otherDirMessages= Messages.findOne({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$lt: filter} }]});
 		}else{
-			prevMessages= Messages.findOne({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$gt: filter} }]});				
+			otherDirMessages= Messages.findOne({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$gt: filter} }]});				
 		}
 	}else{
-		publishingMessages= Messages.find({$or: [{location: locSelector},{owner: userSelector}]},{sort:{createdAt:-1}, skip: 0, limit: messagesOnPage});
-		if(publishingMessages.fetch().length()>0){
-			nextMessages= Messages.findOne({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$lt: publishingMessages[0]['createdAt']} }]});
-		}
+		otherDirMessages= Messages.findOne({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$gt: new Date()} }]});	
 	}
-		return prevMessages;
+		return otherDirMessages;
 	});
 	
-	Meteor.publish('prevMessages',function messagesPublication(filter,forvard,locSelector){
-		return nextMessages;
-	});
 };
 Meteor.methods({
 	'messages.insert'(text){
