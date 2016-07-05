@@ -36,12 +36,17 @@ if(Meteor.isServer){
 	Meteor.publish('otherDirectionMessages',function messagesPublication(filter,forvard,locSelector){
 	if(filter!==undefined){		
 		if(forvard){
-			otherDirMessages= Messages.findOne({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$lt: filter} }]});
+			console.log("2");
+			otherDirMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$lt: filter} }]},{limit: 1});
+			
 		}else{
-			otherDirMessages= Messages.findOne({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$gt: filter} }]});				
+			otherDirMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$gt: filter} }]},{limit: 1});
+				console.log("1");
 		}
 	}else{
-		otherDirMessages= Messages.findOne({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$gt: new Date()} }]});	
+		console.log("3");
+		otherDirMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$gt: new Date()} }]},{limit: 1});	
+		
 	}
 		return otherDirMessages;
 	});

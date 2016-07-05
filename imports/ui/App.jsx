@@ -112,10 +112,23 @@ var App = React.createClass({
 									</select>
 
 								</form>
-							<button onClick={this.changeProfile}>Save data</button>
+							<button onClick={this.changeProfile} >Save data</button>
 							</div>
 		}
-				
+		var buttonFB="";
+		if(this.props.otherDirectionMessages){
+			buttonFB =<div>
+						<button onClick={this.prevMessages}>Back</button>
+						<button onClick={this.nextMessages}>Next</button>
+					</div>
+		}else{
+			buttonFB =
+			<div>
+					<button onClick={this.prevMessages}>Back</button>
+			</div>
+		}
+		
+		
 		return(
 			<div className="container">
 				<header>
@@ -144,8 +157,7 @@ var App = React.createClass({
 					{this.renderMessages()}
 				</ul>
 				<div>{Session.get("filter").toLocaleString}</div>
-				<button onClick={this.prevMessages}>Back</button>
-				<button onClick={this.nextMessages}>Next</button>
+				{buttonFB}
 
 			</div>
 		);
@@ -156,6 +168,7 @@ var App = React.createClass({
 	messages: PropTypes.array.isRequired, 
 	locations: PropTypes.array.isRequired, 
 	users: PropTypes.array.isRequired,
+	otherDirectionMessages: PropTypes.bool.isRequired,
   };
   
   export default createContainer(()=>{
@@ -211,7 +224,7 @@ var App = React.createClass({
 		
 		
 		messages: publishingMessages.fetch(),
-		otherDirectionMessages: otherDirMessages.fetch(),
+		otherDirectionMessages: otherDirMessages.fetch().length>0,
 					
 		users: Meteor.users.find().fetch(),
 		locations: Locations.find({}).fetch()
