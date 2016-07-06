@@ -5,7 +5,6 @@ import App from '../ui/App.jsx';
 
 
 export const Messages= new Mongo.Collection('messages');
-messagesOnPage=6;
 lastDate=undefined;
 
 if(Meteor.isServer){
@@ -16,10 +15,11 @@ if(Meteor.isServer){
 	var otherDirMessages=[];
 	var self = this;
 	
-	messagesOnPage++;
 	
 	
-	Meteor.publish('messages',function messagesPublication(filter,forvard,locSelector){
+	
+	Meteor.publish('messages',function messagesPublication(filter,forvard,locSelector,messagesOnPage){
+		messagesOnPage++;
 		if(filter!==undefined){
 			
 			if(forvard){
