@@ -169,10 +169,11 @@ var App = React.createClass({
 	locations: PropTypes.array.isRequired, 
 	users: PropTypes.array.isRequired,
 	otherDirectionMessages: PropTypes.bool.isRequired,
+	currDirectionMessages: PropTypes.bool.isRequired,
   };
   
   export default createContainer(()=>{
-  	
+  var messagesOnPage=6;	
 	if (Meteor.isClient) {
 		if(Session.get("filter")==undefined){
 			Session.set("filter", new Date());
@@ -181,7 +182,7 @@ var App = React.createClass({
 	}
   
 
-   Meteor.subscribe('messages',Session.get("filter"),Session.get("forvard"),(Meteor.user()!==null&&Meteor.user()!==undefined)? Meteor.user().location:"");
+   Meteor.subscribe('messages',Session.get("filter"),Session.get("forvard"),(Meteor.user()!==null&&Meteor.user()!==undefined)? Meteor.user().location:"",messagesOnPage);
    Meteor.subscribe('otherDirectionMessages',Session.get("filter"),Session.get("forvard"),(Meteor.user()!==null&&Meteor.user()!==undefined)? Meteor.user().location:"");
    
    Meteor.subscribe('locations');
@@ -225,6 +226,7 @@ var App = React.createClass({
 		
 		messages: publishingMessages.fetch(),
 		otherDirectionMessages: otherDirMessages.fetch().length>0,
+		currDirectionMessages:	publishingMessages.fetch().length>messagesOnPage,
 					
 		users: Meteor.users.find().fetch(),
 		locations: Locations.find({}).fetch()
