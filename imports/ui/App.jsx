@@ -118,16 +118,17 @@ var App = React.createClass({
 		var buttonFB=<div></div>;
 		if(this.props.otherDirectionMessages&&this.props.currDirectionMessages){
 			buttonFB =<div>
-						<button onClick={this.prevMessages}>Back</button>
 						<button onClick={this.nextMessages}>Next</button>
+						<button onClick={this.prevMessages}>Back</button>					
 					</div>
 		}else{
-			if(Session.get("forvard")&&this.props.currDirectionMessages){
+			if((!Session.get("forvard")&&this.props.otherDirectionMessages)||(Session.get("forvard")&&this.props.currDirectionMessages)){
 				buttonFB =<div>
+						
 						<button onClick={this.nextMessages}>Next</button>
 					</div>	
 			}
-			if(Session.get("forvard")&&this.props.currDirectionMessages){
+			if((!Session.get("forvard")&&this.props.currDirectionMessages)||(Session.get("forvard")&&this.props.otherDirectionMessages)){
 				buttonFB =<div>
 						<button onClick={this.prevMessages}>Back</button>
 					</div>	
@@ -201,14 +202,15 @@ var App = React.createClass({
 	
 	var publishingMessages=[];
 	var otherDirMessages=[];
-	
+	var currDirMessages=[]
 	
 	if(Session.get("filter")!==undefined){
 			
 		if(Session.get("forvard")){
-			publishingMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$gt: Session.get("filter")} }]},{sort:{createdAt:1}, skip: 0, limit: messagesOnPage});
+			publishingMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$gt: Session.get("filter")} }]},{sort:{createdAt:-1}, skip: 0, limit: messagesOnPage+1});			
 		}else{
-			publishingMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$lt: Session.get("filter")} }]},{sort:{createdAt:-1}, skip: 0, limit: messagesOnPage});						
+			publishingMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$lt: Session.get("filter")} }]},{sort:{createdAt:-1}, skip: 0, limit: messagesOnPage+1});															
+		
 		}
 	}else{
 		publishingMessages= Messages.find({$or: [{location: locSelector},{owner: userSelector}]},{sort:{createdAt:-1}, skip: 0, limit: messagesOnPage});
@@ -217,8 +219,10 @@ var App = React.createClass({
 	if(Session.get("filter")!==undefined){		
 		if(Session.get("forvard")){
 			otherDirMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$lt: Session.get("filter")} }]});
+			currDirMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$gt: Session.get("filter")} }]});
 		}else{
-			otherDirMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$lt: Session.get("filter")} }]});				
+			otherDirMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$gt: Session.get("filter")} }]});
+			currDirMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$lt: Session.get("filter")} }]});			
 		}
 	}else{
 		otherDirMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$gt: new Date()} }]});	
@@ -233,7 +237,7 @@ var App = React.createClass({
 		
 		messages: publishingMessages.fetch(),
 		otherDirectionMessages: otherDirMessages.fetch().length>0,
-		currDirectionMessages:	publishingMessages.fetch().length>messagesOnPage,
+		currDirectionMessages:	currDirMessages.fetch().length>messagesOnPage,
 					
 		users: Meteor.users.find().fetch(),
 		locations: Locations.find({}).fetch()
