@@ -115,17 +115,24 @@ var App = React.createClass({
 							<button onClick={this.changeProfile} >Save data</button>
 							</div>
 		}
-		var buttonFB="";
-		if(this.props.otherDirectionMessages){
+		var buttonFB=<div></div>;
+		if(this.props.otherDirectionMessages&&this.props.currDirectionMessages){
 			buttonFB =<div>
 						<button onClick={this.prevMessages}>Back</button>
 						<button onClick={this.nextMessages}>Next</button>
 					</div>
 		}else{
-			buttonFB =
-			<div>
-					<button onClick={this.prevMessages}>Back</button>
-			</div>
+			if(Session.get("forvard")&&this.props.currDirectionMessages){
+				buttonFB =<div>
+						<button onClick={this.nextMessages}>Next</button>
+					</div>	
+			}
+			if(Session.get("forvard")&&this.props.currDirectionMessages){
+				buttonFB =<div>
+						<button onClick={this.prevMessages}>Back</button>
+					</div>	
+			}
+
 		}
 		
 		
