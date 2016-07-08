@@ -207,9 +207,9 @@ var App = React.createClass({
 	if(Session.get("filter")!==undefined){
 			
 		if(Session.get("forvard")){
-			publishingMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$gt: Session.get("filter")} }]},{sort:{createdAt:-1}, skip: 0, limit: messagesOnPage+1});			
+			publishingMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$gt: Session.get("filter")} }]},{sort:{createdAt:-1}, skip: 1, limit: messagesOnPage+1});			
 		}else{
-			publishingMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$lt: Session.get("filter")} }]},{sort:{createdAt:-1}, skip: 0, limit: messagesOnPage+1});															
+			publishingMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$lt: Session.get("filter")} }]},{sort:{createdAt:-1}, skip: 1, limit: messagesOnPage+1});															
 		
 		}
 	}else{
