@@ -207,9 +207,9 @@ var App = React.createClass({
 	if(Session.get("filter")!==undefined){
 			
 		if(Session.get("forvard")){
-			publishingMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$gt: Session.get("filter")} }]},{sort:{createdAt:-1}, skip: 1, limit: messagesOnPage+1});			
+			publishingMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$gt: Session.get("filter")} }]},{sort:{createdAt:-1}, skip: 0, limit: messagesOnPage});			
 		}else{
-			publishingMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$lt: Session.get("filter")} }]},{sort:{createdAt:-1}, skip: 1, limit: messagesOnPage+1});															
+			publishingMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$lt: Session.get("filter")} }]},{sort:{createdAt:-1}, skip: 0, limit: messagesOnPage});															
 		
 		}
 	}else{
@@ -227,7 +227,7 @@ var App = React.createClass({
 	}else{
 		otherDirMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$gt: new Date()} }]});	
 	}	
-
+	JM=Messages.find();
 	return{
 		//messages: Messages.find({location: locSelector},{sort:{createdAt:-1}, skip: 0, limit: 2}).fetch(), 
 		//messages: Messages.find({$or: [{location: locSelector},{owner: userSelector}]},{sort:{createdAt:-1}, skip: 0, limit: 2}).fetch(), 
@@ -240,7 +240,8 @@ var App = React.createClass({
 		currDirectionMessages:	currDirMessages.fetch().length>messagesOnPage,
 					
 		users: Meteor.users.find().fetch(),
-		locations: Locations.find({}).fetch()
+		locations: Locations.find({}).fetch(),
+		jm: JM.fetch()
 		
 	};
   

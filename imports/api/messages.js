@@ -37,15 +37,15 @@ if(Meteor.isServer){
 	if(filter!==undefined){		
 		if(forvard){
 			console.log("2");
-			otherDirMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$lt: filter} }]},{limit: 1});
+			otherDirMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$lt: filter} }]},{sort:{createdAt:-1}, skip: 0, limit: 1});
 			
 		}else{
-			otherDirMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$gt: filter} }]},{limit: 1});
+			otherDirMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$gt: filter} }]},{sort:{createdAt:1}, skip: 0, limit: 1});
 				console.log("1");
 		}
 	}else{
 		console.log("3");
-		otherDirMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$gt: new Date()} }]},{limit: 1});	
+		otherDirMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$gt: new Date()} }]},{sort:{createdAt:1}, skip: 0, limit: 1});	
 		
 	}
 		return otherDirMessages;
