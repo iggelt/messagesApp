@@ -176,9 +176,11 @@ var App = React.createClass({
 					{this.renderMessages()}
 				</ul>
 				<ul>
-				
-				
+					{this.renderAllMessages()}				
+				</ul>
 				<ul>
+					{this.renderBackMessages()}				
+				</ul>
 				<div>{Session.get("filter").toLocaleString}</div>
 				{buttonFB}
 
