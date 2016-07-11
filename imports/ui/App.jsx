@@ -34,6 +34,17 @@ var App = React.createClass({
 		
 		)); 
 	  },
+	  renderAllMessages: function(){
+		return this.props.jm.map((message)=> (
+			<Message key={message._id} message={message} author={Meteor.users.findOne({_id:message.owner})} />
+		
+		)); 
+	  },
+	 renderBackMessages: function(){
+		return this.props.odm.map((message)=> (
+			<Message key={message._id} message={message} author={Meteor.users.findOne({_id:message.owner})} />
+		)); 
+	  },
 	  
 	  
 	  renderLocations: function(){
@@ -164,6 +175,10 @@ var App = React.createClass({
 				<ul>
 					{this.renderMessages()}
 				</ul>
+				<ul>
+				
+				
+				<ul>
 				<div>{Session.get("filter").toLocaleString}</div>
 				{buttonFB}
 
@@ -238,7 +253,8 @@ var App = React.createClass({
 		messages: publishingMessages.fetch(),
 		otherDirectionMessages: otherDirMessages.fetch().length>0,
 		currDirectionMessages:	currDirMessages.fetch().length>messagesOnPage,
-					
+		
+		odm: otherDirMessages.fetch(),			
 		users: Meteor.users.find().fetch(),
 		locations: Locations.find({}).fetch(),
 		jm: JM.fetch()
