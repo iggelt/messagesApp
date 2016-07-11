@@ -221,18 +221,7 @@ var App = React.createClass({
 	var otherDirMessages=[];
 	var currDirMessages=[]
 	
-	if(Session.get("filter")!==undefined){
-			
-		if(Session.get("forvard")){
-			publishingMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$gt: Session.get("filter")} }]},{sort:{createdAt:-1}, skip: 0, limit: messagesOnPage});			
-		}else{
-			publishingMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$lt: Session.get("filter")} }]},{sort:{createdAt:-1}, skip: 0, limit: messagesOnPage});															
-		
-		}
-	}else{
-		publishingMessages= Messages.find({$or: [{location: locSelector},{owner: userSelector}]},{sort:{createdAt:-1}, skip: 0, limit: messagesOnPage});
-	}
-
+	
 	if(Session.get("filter")!==undefined){		
 		if(Session.get("forvard")){
 			otherDirMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$lt: Session.get("filter")} }]});
@@ -243,7 +232,23 @@ var App = React.createClass({
 		}
 	}else{
 		otherDirMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$gt: new Date()} }]});	
-	}	
+	}
+	
+	var skipNumber=Math.max(currDirMessages.fetch().length-messagesOnPage,0);
+	
+	if(Session.get("filter")!==undefined){
+			
+		if(Session.get("forvard")){
+			publishingMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$gt: Session.get("filter")} }]},{sort:{createdAt:-1}, skip: skipNumber, limit: messagesOnPage+skipNumber});			
+		}else{
+			publishingMessages= Messages.find({$and:[{$or: [{location: locSelector},{owner: userSelector}]} ,{createdAt:{$lt: Session.get("filter")} }]},{sort:{createdAt:-1}, skip: 0, limit: messagesOnPage});															
+		
+		}
+	}else{
+		publishingMessages= Messages.find({$or: [{location: locSelector},{owner: userSelector}]},{sort:{createdAt:-1}, skip: 0, limit: messagesOnPage});
+	}
+
+	
 	JM=Messages.find();
 	return{
 		//messages: Messages.find({location: locSelector},{sort:{createdAt:-1}, skip: 0, limit: 2}).fetch(), 
